@@ -31,9 +31,19 @@ exports.createPages = async ({ actions, graphql, reporter }) => {
 
   result.data.allMarkdownRemark.edges.forEach(({ node }) => {
     createPage({
-      path: node.frontmatter.path,
+      path: sanitizePagePath(node.frontmatter.path),
       component: blogPostTemplate,
-      context: {}, // additional data can be passed via context
+      context: {
+        pagePath: node.frontmatter.path
+        // additional data can be passed via context
+      },
     })
   })
+}
+
+function sanitizePagePath(pagePath) {
+  if (typeof pagePath === 'string' && !pagePath.startsWith('/')) {
+    return '/' + pagePath;
+  }
+  return pagePath;
 }
